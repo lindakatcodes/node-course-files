@@ -1,13 +1,26 @@
-console.log('Starting app');
+console.log('Starting app.js');
 
 const fs = require('fs');
-const os = require('os');
+const _ = require('lodash');
+const yargs = require('yargs');
 
-let user = os.userInfo();
+const notes = require('./notes.js');
 
-fs.appendFile('greetings.txt', `Hello ${user.username}!` , function (err) {
-    if (err) {
-        console.log('Unable to write to file.');
-    }
-});
+const argv = yargs.argv;
+console.log(argv);
+var command = argv._[0];
+console.log('Command:', command);
 
+if (command === 'add') {
+    notes.addNote(argv.title, argv.body);
+} else if (command === 'list') {
+    notes.getAll();
+} else if (command === 'read') {
+    notes.getNote(argv.title);
+} else if (command === 'remove') {
+    notes.removeNote(argv.title);
+} else if (command === undefined) {
+    console.log('No command given!');  
+} else {
+    console.log('Command not recognized');
+}
