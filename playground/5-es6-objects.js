@@ -29,7 +29,7 @@ const product = {
 
 // can also destructure in function call, if you know obj is being passed
 
-const transaction = (type, {label, stock}) => {
+const transaction = (type, {label, stock = 0 } = {}) => {
     console.log(type, label, stock);
 }
 
