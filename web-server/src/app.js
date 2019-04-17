@@ -75,13 +75,6 @@ app.get('/weather', (req, res) => {
             })
         })
     })
-
-    // we use .send when we want to send something to the browser
-    // res.send({
-    //     forecast: 'cloudy',
-    //     location: 'Idaho', 
-    //     address: req.query.address
-    // });
 })
 
 app.get('/products', (req, res) => {

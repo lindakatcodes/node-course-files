@@ -10,7 +10,7 @@ const forecast = (latitude, longitude, callback) => {
             callback('Unable to find location. Wah wah.');
         } else {
             const data = body.currently;
-            callback(undefined, `Today's outlook is ${data.summary}. It is currently ${data.temperature} degrees out with a ${(data.precipProbability * 100)}% chance of rain.`);
+            callback(undefined, `The weather outside is currently ${data.summary} and ${data.temperature} degrees F. The humidity is ${data.humidity * 100}%, with ${data.precipProbability * 100}% chance of rain, and winds averaging ${data.windSpeed} miles per hour.`);
         }
     });
 }
