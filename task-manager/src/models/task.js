@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Create the schema for a new task
 const taskSchema = new mongoose.Schema({
     description: {
         type: String,
@@ -19,6 +20,7 @@ const taskSchema = new mongoose.Schema({
     timestamps: true
 })
 
+// Allow that schema to be accessed by the other files
 const Task = mongoose.model('Task', taskSchema)
 
 module.exports = Task;

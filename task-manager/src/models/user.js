@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const Task = require('./task')
 
+// Create the user schema
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -55,12 +56,14 @@ const userSchema = new mongoose.Schema({
     timestamps: true
 })
 
+// Ties the user to their authorized tasks, links the items in the db
 userSchema.virtual('tasks', {
     ref: 'Task',
     localField: '_id',
     foreignField: 'owner'
 })
 
+// Only returns secure, needed information to the server when an account is requested
 userSchema.methods.toJSON = function () {
     const user = this;
     const userObject = user.toObject();
@@ -72,6 +75,7 @@ userSchema.methods.toJSON = function () {
     return userObject;
 }
 
+// Generates an auth token to authorize a user once they're created or logged in
 userSchema.methods.generateAuthToken = async function () {
     const user = this;
 
@@ -83,6 +87,7 @@ userSchema.methods.generateAuthToken = async function () {
     return token;
 }
 
+// Checks email and password to validate the user so they can log in, if all matches
 userSchema.statics.findByCredentials = async (email, password) => {
     const user = await User.findOne({ email })
 
@@ -99,7 +104,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
     return user;
 }
 
-// hash plain text password
+// Before saving, hash the user's password so it's protected
 userSchema.pre('save', async function (next) {
     const user = this;
 
@@ -117,6 +122,7 @@ userSchema.pre('remove', async function (next) {
     next();
 })
 
+// Allows the user model settings to be available to other files
 const User = mongoose.model('User', userSchema)
 
 module.exports = User;

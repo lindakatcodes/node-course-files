@@ -6,7 +6,7 @@ const auth = require('../middleware/auth');
 const { sendWelcomeEmail, sendCancelEmail } = require('../emails/account');
 const router = new express.Router();
 
-
+// Create a new user account
 router.post('/users', async (req, res) => {
     const user = new User(req.body);
 
@@ -20,6 +20,7 @@ router.post('/users', async (req, res) => {
     }
 })
 
+// Allow a user to login
 router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
@@ -30,6 +31,7 @@ router.post('/users/login', async (req, res) => {
     }
 })
 
+// Allow a user to logout
 router.post('/users/logout', auth, async (req, res) => {
     try {
         req.user.tokens = req.user.tokens.filter((token) => {
@@ -42,6 +44,7 @@ router.post('/users/logout', auth, async (req, res) => {
     }
 })
 
+// Log user out from all authorized devices
 router.post('/users/logoutAll', auth, async (req, res) => {
     try {
         req.user.tokens = [];
@@ -52,10 +55,12 @@ router.post('/users/logoutAll', auth, async (req, res) => {
     }
 })
 
+// View logged in user's profile
 router.get('/users/me', auth, async (req, res) => {
     res.send(req.user);
 })
 
+// Update a user's profile
 router.patch('/users/me', auth, async (req, res) => {
     const allowedUpdates = ['name', 'email', 'password', 'age'];
     const updates = Object.keys(req.body)
@@ -74,6 +79,7 @@ router.patch('/users/me', auth, async (req, res) => {
     }
 })
 
+// Let's a user delete their own account
 router.delete('/users/me', auth, async (req, res) => {
     try {
         await req.user.remove()
@@ -84,6 +90,7 @@ router.delete('/users/me', auth, async (req, res) => {
     }
 })
 
+// File upload settings for Multer, sets max file size and file type expected
 const upload = multer({
     limits: {
         fileSize: 1000000
@@ -96,6 +103,7 @@ const upload = multer({
     }
 })
 
+// Allow user to set their own avatar, or upload a new image to replace the old one
 router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) => {
     const buffer = await sharp(req.file.buffer).resize({ width: 250, height: 250 }).png().toBuffer()
     req.user.avatar = buffer;
@@ -105,12 +113,14 @@ router.post('/users/me/avatar', auth, upload.single('avatar'), async (req, res) 
     res.status(400).send({ error: error.message })
 })
 
+// Allow user to remove their own avatar
 router.delete('/users/me/avatar', auth, async (req, res) => {
     req.user.avatar = undefined;
     await req.user.save();
     res.send();
 })
 
+// View the authorized user's avatar
 router.get('/users/:id/avatar', async (req, res) => {
     try {
         const user = await User.findById(req.params.id)
