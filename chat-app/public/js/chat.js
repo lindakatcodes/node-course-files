@@ -5,10 +5,29 @@ const $messageForm = document.querySelector('#textForm');
 const $messageFormInput = $messageForm.querySelector('input');
 const $messageFormButton = $messageForm.querySelector('button');
 const $locationButton = document.querySelector('#sendLocation');
+const $messages = document.querySelector('#messages');
+
+// Templates
+const messageTemplate = document.querySelector('#message-template').innerHTML
+const locationTemplate = document.querySelector('#location-template').innerHTML
 
 
-socket.on('message', (welcome) => {
-    console.log(welcome)
+socket.on('message', (message) => {
+    console.log(message)
+    const html = Mustache.render(messageTemplate, {
+        message: message.text,
+        createdAt: moment(message.createdAt).format('h:mm A')
+    });
+    $messages.insertAdjacentHTML('beforeend', html);
+})
+
+socket.on('locationMessage', (location) => {
+    console.log(location);
+    const html = Mustache.render(locationTemplate, {
+        url: location.url,
+        createdAt: moment(location.createdAt).format('h:mm A')
+    });
+    $messages.insertAdjacentHTML('beforeend', html);
 })
 
 $messageForm.addEventListener('submit', (e) => {
@@ -33,7 +52,7 @@ $messageForm.addEventListener('submit', (e) => {
 
 $locationButton.addEventListener('click', () => {
     if (!navigator.geolocation) {
-        return alert('Gelocation is not supported by your browser.')
+        return alert('Geolocation is not supported by your browser.')
     }
 
     $locationButton.setAttribute('disabled', 'disabled');
