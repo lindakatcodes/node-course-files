@@ -6,13 +6,39 @@ const $messageFormInput = $messageForm.querySelector('input');
 const $messageFormButton = $messageForm.querySelector('button');
 const $locationButton = document.querySelector('#sendLocation');
 const $messages = document.querySelector('#messages');
+const $sidebar = document.querySelector('#sidebar');
 
 // Templates
 const messageTemplate = document.querySelector('#message-template').innerHTML
 const locationTemplate = document.querySelector('#location-template').innerHTML
+const sidebarTemplate = document.querySelector('#sidebar-template').innerHTML
 
+// Options
 const { username, room } = Qs.parse(location.search, { ignoreQueryPrefix: true })
 
+const autoscroll = () => {
+    // grab the newest message
+    const $newMessage = $messages.lastElementChild;
+
+    // what's the height of the newest message, including margin?
+    const newMessageStyles = getComputedStyle($newMessage);
+    const newMessageMargin = parseInt(newMessageStyles.marginBottom);
+    const newMessageHeight = $newMessage.offsetHeight + newMessageMargin;
+
+    // store our site's visible height & the height of the messages container
+    const visibleHeight = $messages.offsetHeight;
+    const containerHeight = $messages.scrollHeight;
+
+    // check where the scroll bar currently is - can only grab the top of the bar, so adding visible height gets us more accurate data
+    const scrollOffset = $messages.scrollTop + visibleHeight;
+
+    // if our messages container - new message is smaller than the offset, we're at the bottom and want to autoscroll
+    if (containerHeight - newMessageHeight <= scrollOffset) {
+        $messages.scrollTop = $messages.scrollHeight;
+    }
+}
+
+// template rendering
 socket.on('message', (message) => {
     console.log(message)
     const html = Mustache.render(messageTemplate, {
@@ -21,6 +47,7 @@ socket.on('message', (message) => {
         createdAt: moment(message.createdAt).format('h:mm A')
     });
     $messages.insertAdjacentHTML('beforeend', html);
+    autoscroll();
 })
 
 socket.on('locationMessage', (locationData) => {
@@ -31,8 +58,18 @@ socket.on('locationMessage', (locationData) => {
         createdAt: moment(locationData.createdAt).format('h:mm A')
     });
     $messages.insertAdjacentHTML('beforeend', html);
+    autoscroll();
 })
 
+socket.on('roomData', ({ room, users }) => {
+    const html = Mustache.render(sidebarTemplate, {
+        room,
+        users
+    })
+    $sidebar.innerHTML = html;
+})
+
+// client listeners for actions
 $messageForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
