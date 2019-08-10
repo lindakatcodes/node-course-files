@@ -40,7 +40,6 @@ const autoscroll = () => {
 
 // template rendering
 socket.on('message', (message) => {
-    console.log(message)
     const html = Mustache.render(messageTemplate, {
         username: message.username,
         message: message.text,
@@ -51,7 +50,6 @@ socket.on('message', (message) => {
 })
 
 socket.on('locationMessage', (locationData) => {
-    console.log(locationData);
     const html = Mustache.render(locationTemplate, {
         username: locationData.username,
         url: locationData.url,
