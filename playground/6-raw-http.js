@@ -1,6 +1,6 @@
 const https = require('https');
 
-const url = `https://api.darksky.net/forecast/2854e3fa26dc0a694dc165a076c1aefb/40,-75`; 
+const url = `https://api.darksky.net/forecast/${process.env.DARK_SKY_API}/40,-75`; 
 
 const request = https.request(url, (response) => {
     let data = '';

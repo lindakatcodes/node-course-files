@@ -1,2 +1,4 @@
 node_modules
 task-manager/config
+weather-app/variables.env
+web-server/variables.env
